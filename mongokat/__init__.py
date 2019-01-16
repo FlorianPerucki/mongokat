@@ -18,8 +18,10 @@ import bson
 # This other monkey-patch is needed to disable the type check on document_class, because
 # we also can pass a tuple to use additional kwargs in the document_class instanciation.
 class CodecOptionsWithoutCheck(bson.codec_options.CodecOptions):
-  def __new__(cls, document_class=dict,
-              tz_aware=False, uuid_representation=bson.codec_options.PYTHON_LEGACY):
+    def __new__(cls, document_class=dict,
+                tz_aware=False, uuid_representation=bson.codec_options.PYTHON_LEGACY,
+                unicode_decode_error_handler="strict",
+                tzinfo=None):
       # if not issubclass(document_class, MutableMapping):
       #     raise TypeError("document_class must be dict, bson.son.SON, or "
       #                     "another subclass of collections.MutableMapping")
@@ -30,8 +32,8 @@ class CodecOptionsWithoutCheck(bson.codec_options.CodecOptions):
                            "from bson.binary.ALL_UUID_REPRESENTATIONS")
 
       return tuple.__new__(
-          cls, (document_class, tz_aware, uuid_representation))
-
+        cls, (document_class, tz_aware, uuid_representation,
+              unicode_decode_error_handler, tzinfo))
 
 bson.codec_options.CodecOptions = CodecOptionsWithoutCheck
 
